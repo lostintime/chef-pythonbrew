@@ -1,5 +1,5 @@
-chef-pythonbrew Cookbook
-========================
+pythonbrew Cookbook
+===================
 TODO: Enter the cookbook description here.
 
 e.g.
@@ -11,14 +11,14 @@ TODO: List your cookbook requirements. Be sure to include any requirements this 
 
 e.g.
 #### packages
-- `toaster` - chef-pythonbrew needs toaster to brown your bagel.
+- `toaster` - pythonbrew needs toaster to brown your bagel.
 
 Attributes
 ----------
 TODO: List you cookbook attributes here.
 
 e.g.
-#### chef-pythonbrew::default
+#### pythonbrew::default
 <table>
   <tr>
     <th>Key</th>
@@ -27,7 +27,7 @@ e.g.
     <th>Default</th>
   </tr>
   <tr>
-    <td><tt>['chef-pythonbrew']['bacon']</tt></td>
+    <td><tt>['pythonbrew']['bacon']</tt></td>
     <td>Boolean</td>
     <td>whether to include bacon</td>
     <td><tt>true</tt></td>
@@ -36,17 +36,17 @@ e.g.
 
 Usage
 -----
-#### chef-pythonbrew::default
+#### pythonbrew::default
 TODO: Write usage instructions for each cookbook.
 
 e.g.
-Just include `chef-pythonbrew` in your node's `run_list`:
+Just include `pythonbrew` in your node's `run_list`:
 
 ```json
 {
   "name":"my_node",
   "run_list": [
-    "recipe[chef-pythonbrew]"
+    "recipe[pythonbrew]"
   ]
 }
 ```

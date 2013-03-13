@@ -1,10 +1,10 @@
-# CHANGELOG for chef-pythonbrew
+# CHANGELOG for pythonbrew
 
-This file is used to list changes made in each version of chef-pythonbrew.
+This file is used to list changes made in each version of pythonbrew.
 
 ## 0.1.0:
 
-* Initial release of chef-pythonbrew
+* Initial release of pythonbrew
 
 - - -
 Check the [Markdown Syntax Guide](http://daringfireball.net/projects/markdown/syntax) for help with Markdown.

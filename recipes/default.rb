@@ -1,5 +1,5 @@
 #
-# Cookbook Name:: chef-pythonbrew
+# Cookbook Name:: pythonbrew
 # Recipe:: default
 #
 # Copyright 2013, YOUR_COMPANY_NAME
