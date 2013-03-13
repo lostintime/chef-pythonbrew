@@ -22,16 +22,18 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-# install patch dependency
-package "patch" do
-  action :install
+# install system tools used to setup pythonbrew
+%w{patch curl sed}.each do |pkg|
+	package pkg do
+		action :install
+	end
 end
 
 pythonbrew_env = {
 	'HOME' => "root" == node['pythonbrew']['user'] ? '/root' : node['pythonbrew']['HOME'].to_s.gsub('%user%', node['pythonbrew']['user'])
 }
 
-Chef::Log.info("Installing pythonbrew for user '#{node['pythonbrew']['user']}' (#{pythonbrew_env['HOME']})")
+Chef::Log.info("Will install pythonbrew for user '#{node['pythonbrew']['user']}' (#{pythonbrew_env['HOME']})")
 
 execute "install pythonbrew" do
 	user node['pythonbrew']['user']
@@ -42,8 +44,6 @@ end
 
 if "root" != node['pythonbrew']['user']
 	# add to bashrc: [[ -s $HOME/.pythonbrew/etc/bashrc ]] && source $HOME/.pythonbrew/etc/bashrc
-	Chef::Log.info("Setting up ~/.bashrc")
-
 	execute "remove_pythnbrew_bashrc" do
 		user node['pythonbrew']['user']
 		command "sed -i '/# PYTHONBREW-BEGIN/,/# PYTHONBREW-END>>>/d' $HOME/.bashrc"
