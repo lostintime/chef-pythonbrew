@@ -22,6 +22,10 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+# install patch dependency
+package "patch" do
+  action :install
+end
 
 pythonbrew_env = {
 	'HOME' => "root" == node['pythonbrew']['user'] ? '/root' : node['pythonbrew']['HOME'].to_s.gsub('%user%', node['pythonbrew']['user'])
