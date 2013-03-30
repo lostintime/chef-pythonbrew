@@ -1,6 +1,7 @@
 #
+# Author:: lostintime <lostintime.dev@gmail.com>
 # Cookbook Name:: pythonbrew
-# Recipe:: default
+# Provider:: python
 #
 # Copyright (c) 2012 lostintimedev.com
 #
@@ -21,23 +22,16 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
+#
 
+actions :install, :uninstall
+default_action :install if defined?(default_action) # Chef > 10.8
 
-
-# _pythonbrew_path = pythonbrew_path(node['pythonbrew']['user'])
-# _pythonbrew_env = pythonbrew_env(node['pythonbrew']['user'])
-
-# Chef::Log.info("Will install pythonbrew to #{_pythonbrew_path} ('#{node['pythonbrew']['user']}')")
-
-
-# pythonbrew_setup "vagrant:install" do
-# 	user node['pythonbrew']['user']
-# 	action :install
-# end
-
-pythonbrew_python "2.7.3" do
-	# user node['pythonbrew']['user']
-	user "vagrant"
-	action :install
-	# version "2.7.3"
+def initialize(*args)
+  super
+  @action = :install
 end
+
+attribute :version, :name_attribute => true
+attribute :user, :regex => Chef::Config[:user_valid_regex], :kind_of => String, :default => 'root'
+attribute :group, :regex => Chef::Config[:group_valid_regex]
