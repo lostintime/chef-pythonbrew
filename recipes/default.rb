@@ -22,6 +22,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+::Chef::Recipe.send(:include, Pythonbrew::Helpers)
+
 # install system tools used to setup pythonbrew
 %w{patch curl sed}.each do |pkg|
 	package pkg do
@@ -29,30 +31,31 @@
 	end
 end
 
-pythonbrew_env = {
-	'HOME' => "root" == node['pythonbrew']['user'] ? '/root' : node['pythonbrew']['HOME'].to_s.gsub('%user%', node['pythonbrew']['user'])
-}
 
-Chef::Log.info("Will install pythonbrew for user '#{node['pythonbrew']['user']}' (#{pythonbrew_env['HOME']})")
+_pythonbrew_path = pythonbrew_path(node['pythonbrew']['user'])
+_pythonbrew_env = pythonbrew_env(node['pythonbrew']['user'])
+
+Chef::Log.info("Will install pythonbrew to #{_pythonbrew_path} ('#{node['pythonbrew']['user']}')")
 
 execute "install pythonbrew" do
 	user node['pythonbrew']['user']
 	command "curl -kL http://xrl.us/pythonbrewinstall | bash"
-	creates ("root" == node['pythonbrew']['user'] ? node['pythonbrew']['global_path'] : "#{pythonbrew_env['HOME']}/.pythonbrew")
-	environment (pythonbrew_env)
+	creates (_pythonbrew_path)
+	environment (_pythonbrew_env)
 end
 
-if "root" != node['pythonbrew']['user']
+if 'root' != node['pythonbrew']['user']
 	# add to bashrc: [[ -s $HOME/.pythonbrew/etc/bashrc ]] && source $HOME/.pythonbrew/etc/bashrc
 	execute "remove_pythnbrew_bashrc" do
 		user node['pythonbrew']['user']
 		command "sed -i '/# PYTHONBREW-BEGIN/,/# PYTHONBREW-END>>>/d' $HOME/.bashrc"
-		environment (pythonbrew_env)
+		environment (_pythonbrew_env)
 	end
 
 	execute "add_pythonbrew_bashrc" do
 		user node['pythonbrew']['user']
 		command "echo '# PYTHONBREW-BEGIN\n[[ -s $HOME/.pythonbrew/etc/bashrc ]] && source $HOME/.pythonbrew/etc/bashrc\n# PYTHONBREW-END' >> $HOME/.bashrc"
-		environment (pythonbrew_env)
+		environment (_pythonbrew_env)
 	end
 end
+

@@ -1,6 +1,5 @@
 #
-# Cookbook Name:: pythonbrew
-# Attributes:: default
+# Author:: lostintime <lostintime.dev@gmail.com>
 #
 # Copyright (c) 2012 lostintimedev.com
 #
@@ -21,8 +20,42 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
+#
 
+module Pythonbrew
+  module Helpers
 
-default['pythonbrew']['user']               = 'root'
-default['pythonbrew']['global_path']		= '/usr/local/pythonbrew'
-default['pythonbrew']['HOME']               = '/home/%user%'
+    def pythonbrew_is_root(user)
+      'root' == user
+    end
+
+    def pythonbrew_user_home(user)
+      if pythonbrew_is_root(user)
+        '/root'
+      else
+        node['pythonbrew']['HOME'].to_s.gsub('%user%', user)
+      end
+    end        
+
+    def pythonbrew_env(user)
+      {'HOME' => pythonbrew_user_home(user)}
+    end
+
+    def pythonbrew_path(user)
+      if pythonbrew_is_root(user)
+        node['pythonbrew']['global_path']
+      else
+        pythonbrew_user_home(user) + "/.pythonbrew"
+      end
+    end
+
+    def pythonbrew_cmd(user)
+      "#{pythonbrew_path(user)}/bin/pythonbrew"
+    end
+
+    def pythonbrew_venv_cmd(user)
+      "#{pythonbrew_cmd(user)} venv"
+    end
+
+  end
+end
