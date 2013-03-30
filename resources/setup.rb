@@ -1,5 +1,7 @@
 #
 # Author:: lostintime <lostintime.dev@gmail.com>
+# Cookbook Name:: pythonbrew
+# Provider:: setup
 #
 # Copyright (c) 2012 lostintimedev.com
 #
@@ -22,48 +24,13 @@
 # THE SOFTWARE.
 #
 
-module Pythonbrew
-  module Helpers
+actions :install, :update, :remove
+default_action :install if defined?(default_action) # Chef > 10.8
 
-    def pythonbrew_is_root(user)
-      'root' == user
-    end
-
-    def pythonbrew_user_home(user)
-      if pythonbrew_is_root(user)
-        '/root'
-      else
-        node['pythonbrew']['HOME'].to_s.gsub('%user%', user)
-      end
-    end        
-
-    def pythonbrew_env(user)
-      {'HOME' => pythonbrew_user_home(user)}
-    end
-
-    def pythonbrew_path(user)
-      if pythonbrew_is_root(user)
-        node['pythonbrew']['global_path']
-      else
-        pythonbrew_user_home(user) + "/.pythonbrew"
-      end
-    end
-
-    def pythonbrew_bin(user)
-      "#{pythonbrew_path(user)}/bin/pythonbrew"
-    end
-
-    def pythonbrew_cmd(user, cmd)
-      "#{pythonbrew_bin(user)} #{cmd}"
-    end
-
-    def pythonbrew_venv_bin(user)
-      "#{pythonbrew_cmd(user)} venv"
-    end
-
-    def pythonbrew_venv_cmd(user, cmd)
-      "#{pythonbrew_venv_bin(user)} #{cmd}"
-    end
-
-  end
+def initialize(*args)
+  super
+  @action = :install
 end
+
+attribute :user, :regex => Chef::Config[:user_valid_regex], :kind_of => String, :default => 'root'
+attribute :group, :regex => Chef::Config[:group_valid_regex]
