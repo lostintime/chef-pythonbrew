@@ -1,7 +1,7 @@
 #
 # Author:: lostintime <lostintime.dev@gmail.com>
 # Cookbook Name:: pythonbrew
-# Provider:: python
+# Resource:: python
 #
 # Copyright (c) 2012 lostintimedev.com
 #
@@ -32,6 +32,6 @@ def initialize(*args)
   @action = :install
 end
 
-attribute :version, :name_attribute => true
+attribute :version, :name_attribute => true, :default => '2.7.3'
 attribute :user, :regex => Chef::Config[:user_valid_regex], :kind_of => String, :default => 'root'
 attribute :group, :regex => Chef::Config[:group_valid_regex]

@@ -1,7 +1,7 @@
 #
 # Author:: lostintime <lostintime.dev@gmail.com>
 # Cookbook Name:: pythonbrew
-# Resource:: setup
+# Resource:: venv
 #
 # Copyright (c) 2012 lostintimedev.com
 #
@@ -24,13 +24,15 @@
 # THE SOFTWARE.
 #
 
-actions :install, :update, :remove
-default_action :install if defined?(default_action) # Chef > 10.8
+actions :create, :delete
+default_action :create if defined?(default_action) # Chef > 10.8
 
 def initialize(*args)
   super
-  @action = :install
+  @action = :create
 end
 
+attribute :name, :kind_of => String, :name_attribute => true
 attribute :user, :regex => Chef::Config[:user_valid_regex], :kind_of => String, :default => 'root'
 attribute :group, :regex => Chef::Config[:group_valid_regex]
+attribute :python_version, :kind_of => String

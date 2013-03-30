@@ -1,7 +1,7 @@
 #
 # Author:: lostintime <lostintime.dev@gmail.com>
 # Cookbook Name:: pythonbrew
-# Resource:: setup
+# Provider:: setup
 #
 # Copyright (c) 2012 lostintimedev.com
 #

@@ -58,11 +58,15 @@ module Pythonbrew
     end
 
     def pythonbrew_venv_bin(user)
-      "#{pythonbrew_cmd(user)} venv"
+      "#{pythonbrew_cmd(user, 'venv')}"
     end
 
     def pythonbrew_venv_cmd(user, cmd)
       "#{pythonbrew_venv_bin(user)} #{cmd}"
+    end
+
+    def pythonbrew_python_bin(user, opts = {})
+      raise "@todo to be implemented"
     end
 
   end

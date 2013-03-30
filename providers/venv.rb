@@ -1,7 +1,7 @@
 #
 # Author:: lostintime <lostintime.dev@gmail.com>
 # Cookbook Name:: pythonbrew
-# Provider:: python
+# Provider:: venv
 #
 # Copyright (c) 2012 lostintimedev.com
 #
@@ -34,14 +34,17 @@ end
 # the Chef::Provider::Package which will make
 # refactoring into core chef easy
 
-action :install do
-	pythonbrew_setup new_resource.user do
+action :create do
+	pythonbrew_python new_resource.python_version do
 		action :install
 		user new_resource.user
 		group new_resource.group if new_resource.group
+		version new_resource.python_version if new_resource.python_version
 	end
 
-	_cmd  = pythonbrew_cmd(new_resource.user, "install \"#{new_resource.version}\"")
+	_cmd  = pythonbrew_venv_cmd(new_resource.user, "create \"#{new_resource.name}\"")	
+	_cmd = (_cmd + " -p \"#{new_resource.python_version}\"") if new_resource.python_version
+
 	execute _cmd do
 		user new_resource.user
   		group new_resource.group if new_resource.group		
@@ -50,13 +53,10 @@ action :install do
 	end	
 end
 
-action :uninstall do
-	pythonbrew_setup new_resource.user do
-		action :install
-		user new_resource.user
-	end
-	
-	_cmd  = pythonbrew_cmd(new_resource.user, "uninstall \"#{new_resource.version}\"")
+action :delete do
+	_cmd  = pythonbrew_venv_cmd(new_resource.user, "delete \"#{new_resource.name}\"")	
+	_cmd = (_cmd + " -p \"#{new_resource.python_version}\"") if new_resource.python_version
+
 	execute _cmd do
 		user new_resource.user
   		group new_resource.group if new_resource.group		
@@ -70,10 +70,10 @@ end
 # so refactoring into core Chef should be easy
 
 def load_current_resource
-  @current_resource = Chef::Resource::PythonbrewPython.new(new_resource.name)
+  @current_resource = Chef::Resource::PythonbrewVenv.new(new_resource.name)
   @current_resource.user(new_resource.user)
   @current_resource.group(new_resource.group)
-  @current_resource.version(new_resource.version)
+  @current_resource.python_version(new_resource.python_version)
   @current_resource
 end
 
