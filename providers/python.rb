@@ -50,12 +50,17 @@ action :install do
 	end	
 end
 
-action :uninstall do
-	pythonbrew_setup new_resource.user do
-		action :install
+action :switch do
+	_cmd  = pythonbrew_cmd(new_resource.user, "switch \"#{new_resource.version}\"")
+	execute _cmd do
 		user new_resource.user
-	end
-	
+  		group new_resource.group if new_resource.group		
+		command _cmd
+		environment (pythonbrew_env(new_resource.user))
+	end	
+end
+
+action :uninstall do	
 	_cmd  = pythonbrew_cmd(new_resource.user, "uninstall \"#{new_resource.version}\"")
 	execute _cmd do
 		user new_resource.user

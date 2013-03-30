@@ -24,7 +24,7 @@
 # THE SOFTWARE.
 #
 
-actions :install, :uninstall
+actions :install, :switch, :uninstall
 default_action :install if defined?(default_action) # Chef > 10.8
 
 def initialize(*args)

@@ -23,21 +23,30 @@
 # THE SOFTWARE.
 
 
-
-# _pythonbrew_path = pythonbrew_path(node['pythonbrew']['user'])
-# _pythonbrew_env = pythonbrew_env(node['pythonbrew']['user'])
-
 # Chef::Log.info("Will install pythonbrew to #{_pythonbrew_path} ('#{node['pythonbrew']['user']}')")
 
-
-# pythonbrew_setup "vagrant:install" do
-# 	user node['pythonbrew']['user']
+# pythonbrew_setup "vagrant" do
+# 	user "vagrant"
 # 	action :install
 # end
 
-pythonbrew_python "2.7.3" do
-	# user node['pythonbrew']['user']
-	user "vagrant"
-	action :install
-	# version "2.7.3"
-end
+# pythonbrew_python "2.7.3" do
+# 	user "vagrant"
+# 	action :install
+# end
+
+# pythonbrew_python "3.3.0" do
+# 	user "vagrant"
+# 	action :install
+# end
+
+# pythonbrew_python "2.7.3" do
+# 	user "vagrant"
+# 	action :switch
+# end
+
+# pythonbrew_venv "my_site" do
+# 	user "vagrant"
+# 	python_version "2.7.3"
+# 	action :create
+# end
