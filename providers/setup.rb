@@ -50,13 +50,22 @@ action :install do
 		environment (pythonbrew_env(new_resource.user))
 	end	
 
+	# create $HOME/.bashrc if not exists
+	file "#{pythonbrew_user_home(new_resource.user)}/.bashrc" do
+		user new_resource.user
+  		group new_resource.group if new_resource.group		
+		mode "0644"
+		action :create
+		not_if {pythonbrew_is_root(new_resource.user) or ::File.exists?("#{pythonbrew_user_home(new_resource.user)}/.bashrc")}
+	end
+
 	# add to bashrc: [[ -s $HOME/.pythonbrew/etc/bashrc ]] && source $HOME/.pythonbrew/etc/bashrc
 	execute "remove_pythnbrew_bashrc" do
 		user new_resource.user
   		group new_resource.group if new_resource.group		
 		command "sed -i '/# PYTHONBREW-BEGIN/,/# PYTHONBREW-END>>>/d' $HOME/.bashrc"
 		environment (pythonbrew_env(new_resource.user))
-		not_if {pythonbrew_is_root(new_resource.user)}
+		not_if {pythonbrew_is_root(new_resource.user) or !::File.exists?("#{pythonbrew_user_home(new_resource.user)}/.bashrc")}
 	end
 
 	execute "add_pythonbrew_bashrc" do
@@ -64,7 +73,7 @@ action :install do
   		group new_resource.group if new_resource.group		
 		command "echo '# PYTHONBREW-BEGIN\n[[ -s $HOME/.pythonbrew/etc/bashrc ]] && source $HOME/.pythonbrew/etc/bashrc\n# PYTHONBREW-END' >> $HOME/.bashrc"
 		environment (pythonbrew_env(new_resource.user))
-		not_if { pythonbrew_is_root(new_resource.user) }
+		not_if {pythonbrew_is_root(new_resource.user) or !::File.exists?("#{pythonbrew_user_home(new_resource.user)}/.bashrc")}
 	end
 
 end
@@ -85,7 +94,7 @@ action :remove do
   		group new_resource.group if new_resource.group		
 		command "sed -i '/# PYTHONBREW-BEGIN/,/# PYTHONBREW-END>>>/d' $HOME/.bashrc"
 		environment (pythonbrew_env(new_resource.user))
-		not_if {pythonbrew_is_root(new_resource.user)}
+		not_if {pythonbrew_is_root(new_resource.user) or !::File.exists?("#{pythonbrew_user_home(new_resource.user)}/.bashrc")}
 	end
 
 	directory pythonbrew_path(new_resource.user) do

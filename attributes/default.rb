@@ -23,6 +23,25 @@
 # THE SOFTWARE.
 
 
+# default pythonbrew user 
 default['pythonbrew']['user']               = 'root'
+# pythonbrew global setup location
 default['pythonbrew']['global_path']		= '/usr/local/pythonbrew'
+# path to user's home fodler - %user% will be replaced with user options setup :user option
 default['pythonbrew']['HOME']               = '/home/%user%'
+
+# python setups configuration
+default['pythonbrew']['setups'] = [
+	# {
+	# 	:user => "vagrant" # required
+	# 	:python_version => "2.7.3" # required for creating virtualenv and/or installing packages
+	# 	:python_is_default => true # optional
+	# 	:venv => "my_mongod" # optional
+	# 	:packages => ["pymongo", {:name => "django", :version => "1.1.4"}] # optional
+	# },
+	# {
+	# 	:user => 'root',
+	# 	:venv => 'global_pack',
+	# 	:packages => ["django", "mrjob"]
+	# }
+]

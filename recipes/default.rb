@@ -23,38 +23,53 @@
 # THE SOFTWARE.
 
 
-pythonbrew_setup "vagrant" do
-	user node['pythonbrew']['user']
-	action :install
+node['pythonbrew']['setups'].each do |s|
+	raise 'Invalid setup configuration - :user required' if s[:user].nil?
+
+	# intstall pythonbrew
+	pythonbrew_setup s[:user] do
+		user s[:user]
+		group s[:group] unless s[:group].nil?
+		action :install
+	end
+
+	if s[:python_version]
+		if s[:packages].nil? or s[:packages].empty?
+			# install python
+			pythonbrew_python s[:python_version] do
+				action [:install].concat(s[:python_is_default] ? [:switch] : [])
+				user s[:user]
+				group s[:group] unless s[:group].nil?
+				version s[:python_version]
+			end
+
+			# create virtualenv
+			if s[:venv]
+				pythonbrew_venv s[:venv] do
+					action :create
+					user s[:user]
+					group s[:group] unless s[:group].nil?
+					python_version s[:python_version]
+				end
+			end
+		end
+
+		# install packages
+		if s[:packages].is_a? Array
+			s[:packages].each do |p|
+				p = {:name => p} if p.is_a? String
+				pythonbrew_pip p[:name] do
+					action :install
+					version p[:version] if p[:version]
+
+					user s[:user]
+					group s[:group] unless s[:group].nil?
+					python_version s[:python_version]
+					venv s[:venv] if s[:venv]
+				end
+
+			end
+		end
+	end
 end
-
-# pythonbrew_python "2.7.3" do
-# 	user "vagrant"
-# 	action :install
-# end
-
-# pythonbrew_python "3.3.0" do
-# 	user "vagrant"
-# 	action :install
-# end
-
-# pythonbrew_python "2.7.3" do
-# 	user "vagrant"
-# 	action :switch
-# end
-
-# pythonbrew_venv "my_site" do
-# 	user "vagrant"
-# 	python_version "2.7.3"
-# 	action :create
-# end
-
-# pythonbrew_pip "django" do
-# 	version "1.1.4"
-# 	action :install
-
-# 	user "vagrant"
-# 	python_version "2.7.3"
-# 	venv "my_site"
-# end
 
