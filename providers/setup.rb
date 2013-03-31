@@ -45,7 +45,7 @@ action :install do
 	execute "curl -kL http://xrl.us/pythonbrewinstall | bash" do
 		user new_resource.user
   		group new_resource.group if new_resource.group		
-		command "whoami && curl -kL http://xrl.us/pythonbrewinstall | bash"
+		command "curl -kL http://xrl.us/pythonbrewinstall | bash"
 		creates (pythonbrew_bin(new_resource.user))
 		environment (pythonbrew_env(new_resource.user))
 	end	
