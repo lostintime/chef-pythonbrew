@@ -42,6 +42,11 @@ action :install do
 		end
 	end
 
+	case node['platform_family']
+	when "debian"
+		package "zlib1g-dev"
+	end	
+
 	execute "curl -kL http://xrl.us/pythonbrewinstall | bash" do
 		user new_resource.user
   		group new_resource.group if new_resource.group		
