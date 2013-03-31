@@ -22,37 +22,54 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-# install system tools used to setup pythonbrew
-%w{patch curl sed}.each do |pkg|
-	package pkg do
+
+node['pythonbrew']['setups'].each do |s|
+	raise 'Invalid setup configuration - :user required' if s[:user].nil?
+
+	# intstall pythonbrew
+	pythonbrew_setup s[:user] do
+		user s[:user]
+		group s[:group] unless s[:group].nil?
 		action :install
 	end
-end
 
-pythonbrew_env = {
-	'HOME' => "root" == node['pythonbrew']['user'] ? '/root' : node['pythonbrew']['HOME'].to_s.gsub('%user%', node['pythonbrew']['user'])
-}
+	if s[:python_version]
+		if s[:packages].nil? or s[:packages].empty?
+			# install python
+			pythonbrew_python s[:python_version] do
+				action [:install].concat(s[:python_is_default] ? [:switch] : [])
+				user s[:user]
+				group s[:group] unless s[:group].nil?
+				version s[:python_version]
+			end
 
-Chef::Log.info("Will install pythonbrew for user '#{node['pythonbrew']['user']}' (#{pythonbrew_env['HOME']})")
+			# create virtualenv
+			if s[:venv]
+				pythonbrew_venv s[:venv] do
+					action :create
+					user s[:user]
+					group s[:group] unless s[:group].nil?
+					python_version s[:python_version]
+				end
+			end
+		end
 
-execute "install pythonbrew" do
-	user node['pythonbrew']['user']
-	command "curl -kL http://xrl.us/pythonbrewinstall | bash"
-	creates ("root" == node['pythonbrew']['user'] ? node['pythonbrew']['global_path'] : "#{pythonbrew_env['HOME']}/.pythonbrew")
-	environment (pythonbrew_env)
-end
+		# install packages
+		if s[:packages].is_a? Array
+			s[:packages].each do |p|
+				p = {:name => p} if p.is_a? String
+				pythonbrew_pip p[:name] do
+					action :install
+					version p[:version] if p[:version]
 
-if "root" != node['pythonbrew']['user']
-	# add to bashrc: [[ -s $HOME/.pythonbrew/etc/bashrc ]] && source $HOME/.pythonbrew/etc/bashrc
-	execute "remove_pythnbrew_bashrc" do
-		user node['pythonbrew']['user']
-		command "sed -i '/# PYTHONBREW-BEGIN/,/# PYTHONBREW-END>>>/d' $HOME/.bashrc"
-		environment (pythonbrew_env)
+					user s[:user]
+					group s[:group] unless s[:group].nil?
+					python_version s[:python_version]
+					venv s[:venv] if s[:venv]
+				end
+
+			end
+		end
 	end
-
-	execute "add_pythonbrew_bashrc" do
-		user node['pythonbrew']['user']
-		command "echo '# PYTHONBREW-BEGIN\n[[ -s $HOME/.pythonbrew/etc/bashrc ]] && source $HOME/.pythonbrew/etc/bashrc\n# PYTHONBREW-END' >> $HOME/.bashrc"
-		environment (pythonbrew_env)
-	end
 end
+

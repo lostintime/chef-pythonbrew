@@ -1,6 +1,7 @@
 #
+# Author:: lostintime <lostintime.dev@gmail.com>
 # Cookbook Name:: pythonbrew
-# Attributes:: default
+# Resource:: python
 #
 # Copyright (c) 2012 lostintimedev.com
 #
@@ -21,27 +22,16 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
+#
 
+actions :install, :switch, :uninstall
+default_action :install if defined?(default_action) # Chef > 10.8
 
-# default pythonbrew user 
-default['pythonbrew']['user']               = 'root'
-# pythonbrew global setup location
-default['pythonbrew']['global_path']		= '/usr/local/pythonbrew'
-# path to user's home fodler - %user% will be replaced with user options setup :user option
-default['pythonbrew']['HOME']               = '/home/%user%'
+def initialize(*args)
+  super
+  @action = :install
+end
 
-# python setups configuration
-default['pythonbrew']['setups'] = [
-	# {
-	# 	:user => "vagrant" # required
-	# 	:python_version => "2.7.3" # required for creating virtualenv and/or installing packages
-	# 	:python_is_default => true # optional
-	# 	:venv => "my_mongod" # optional
-	# 	:packages => ["pymongo", {:name => "django", :version => "1.1.4"}] # optional
-	# },
-	# {
-	# 	:user => 'root',
-	# 	:venv => 'global_pack',
-	# 	:packages => ["django", "mrjob"]
-	# }
-]
+attribute :version, :name_attribute => true, :default => '2.7.3'
+attribute :user, :regex => Chef::Config[:user_valid_regex], :kind_of => String, :default => 'root'
+attribute :group, :regex => Chef::Config[:group_valid_regex]
