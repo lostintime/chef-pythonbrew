@@ -23,12 +23,10 @@
 # THE SOFTWARE.
 
 
-# Chef::Log.info("Will install pythonbrew to #{_pythonbrew_path} ('#{node['pythonbrew']['user']}')")
-
-# pythonbrew_setup "vagrant" do
-# 	user "vagrant"
-# 	action :install
-# end
+pythonbrew_setup "vagrant" do
+	user node['pythonbrew']['user']
+	action :install
+end
 
 # pythonbrew_python "2.7.3" do
 # 	user "vagrant"
@@ -50,3 +48,13 @@
 # 	python_version "2.7.3"
 # 	action :create
 # end
+
+# pythonbrew_pip "django" do
+# 	version "1.1.4"
+# 	action :install
+
+# 	user "vagrant"
+# 	python_version "2.7.3"
+# 	venv "my_site"
+# end
+

@@ -41,7 +41,8 @@ action :install do
 		group new_resource.group if new_resource.group
 	end
 
-	_cmd  = pythonbrew_cmd(new_resource.user, "install \"#{new_resource.version}\"")
+	version = pythonbrew_fix_version(new_resource.version)
+	_cmd  = pythonbrew_cmd(new_resource.user, "install \"#{version}\"")
 	execute _cmd do
 		user new_resource.user
   		group new_resource.group if new_resource.group		
@@ -51,7 +52,8 @@ action :install do
 end
 
 action :switch do
-	_cmd  = pythonbrew_cmd(new_resource.user, "switch \"#{new_resource.version}\"")
+	version = pythonbrew_fix_version(new_resource.version)
+	_cmd  = pythonbrew_cmd(new_resource.user, "switch \"#{version}\"")
 	execute _cmd do
 		user new_resource.user
   		group new_resource.group if new_resource.group		
@@ -61,7 +63,8 @@ action :switch do
 end
 
 action :uninstall do	
-	_cmd  = pythonbrew_cmd(new_resource.user, "uninstall \"#{new_resource.version}\"")
+	version = pythonbrew_fix_version(new_resource.version)
+	_cmd  = pythonbrew_cmd(new_resource.user, "uninstall \"#{version}\"")
 	execute _cmd do
 		user new_resource.user
   		group new_resource.group if new_resource.group		

@@ -1,7 +1,7 @@
 #
 # Author:: lostintime <lostintime.dev@gmail.com>
 # Cookbook Name:: pythonbrew
-# Provider:: venv
+# Provider:: pip
 #
 # Copyright (c) 2012 lostintimedev.com
 #
@@ -34,46 +34,64 @@ end
 # the Chef::Provider::Package which will make
 # refactoring into core chef easy
 
-action :create do
-	pythonbrew_python new_resource.python_version do
-		action :install
+action :install do
+	pythonbrew_pip_setup(new_resource)
+
+	_cmd = pythonbrew_pip_cmd("install \"#{new_resource.name}\"", new_resource.user, new_resource.python_version, new_resource.venv)
+	execute _cmd do
 		user new_resource.user
-		group new_resource.group if new_resource.group
-		version new_resource.python_version if new_resource.python_version
+  		group new_resource.group if new_resource.group		
+		command _cmd
+		environment (pythonbrew_env(new_resource.user))
+	end	
+end
+
+action :uninstall do
+	pythonbrew_pip_setup(new_resource)
+
+	_cmd = pythonbrew_pip_cmd("uninstall \"#{new_resource.name}\"", new_resource.user, new_resource.python_version, new_resource.venv)
+	execute _cmd do
+		user new_resource.user
+  		group new_resource.group if new_resource.group		
+		command _cmd
+		environment (pythonbrew_env(new_resource.user))
+	end		
+end
+
+
+def pythonbrew_pip_setup(new_resource)
+	if new_resource.venv
+		pythonbrew_venv new_resource.venv do
+			action :create
+			user new_resource.user
+			group new_resource.group if new_resource.group
+			python_version new_resource.python_version if new_resource.python_version
+		end
+		_env_cmd = pythonbrew_venv_cmd(new_resource.user, "use \'#{new_resource.venv}\'")
+	else
+		pythonbrew_python new_resource.python_version do
+			action :install
+			user new_resource.user
+			group new_resource.group if new_resource.group
+			version new_resource.python_version if new_resource.python_version
+		end
+		_env_cmd = pythonbrew_cmd(new_resource.user, "use \'#{new_resource.python_version}\'")
 	end
-
-	_cmd = pythonbrew_venv_cmd(new_resource.user, "create \"#{new_resource.name}\"")	
-	_cmd = (_cmd + " -p \"#{new_resource.python_version}\"") if new_resource.python_version
-
-	execute _cmd do
-		user new_resource.user
-  		group new_resource.group if new_resource.group		
-		command _cmd
-		environment (pythonbrew_env(new_resource.user))
-	end	
 end
 
-action :delete do
-	_cmd  = pythonbrew_venv_cmd(new_resource.user, "delete \"#{new_resource.name}\"")	
-	_cmd = (_cmd + " -p \"#{new_resource.python_version}\"") if new_resource.python_version
-
-	execute _cmd do
-		user new_resource.user
-  		group new_resource.group if new_resource.group		
-		command _cmd
-		environment (pythonbrew_env(new_resource.user))
-	end	
-end
 
 # these methods are the required overrides of
 # a provider that extends from Chef::Provider::Package
 # so refactoring into core Chef should be easy
 
 def load_current_resource
-  @current_resource = Chef::Resource::PythonbrewVenv.new(new_resource.name)
+  @current_resource = Chef::Resource::PythonbrewPip.new(new_resource.name)
+  @current_resource.version(new_resource.version)
   @current_resource.user(new_resource.user)
   @current_resource.group(new_resource.group)
   @current_resource.python_version(new_resource.python_version)
+  @current_resource.venv(new_resource.venv)
   @current_resource
 end
+
 
