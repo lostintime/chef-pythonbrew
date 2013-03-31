@@ -4,7 +4,7 @@ Installs pythonbrew for specified user
 
 Requirements
 ------------
-
+`patch`, `curl`, and `sed` utilities required
 
 Attributes
 ----------
@@ -27,17 +27,34 @@ Attributes
     <td>User home path. For "root" user - "/root" path is hardcoded.</td>
     <td><tt>/home/%user%</tt></td>
   </tr>
+  <tr>
+    <td><tt>['pythonbrew']['setups']</tt></td>
+    <td>Arrau</td>
+    <td>Array of python brew installations, check attributes/default.rb for example.</td>
+    <td><tt>[]</tt></td>
+  </tr>
 </table>
 
 Usage
 -----
-Just include `pythonbrew` in your node's `run_list`:
+Include `pythonbrew` in your node's `run_list` and add "setups" to configuration:
 
 	{
-	  "name":"my_node",
-	  "run_list": [
-	    "recipe[pythonbrew]"
-	  ]
+		"name":"my_node",
+		"run_list": [
+			"recipe[pythonbrew]"
+		],
+		"pythonbrew": {
+			"setups": [
+				{
+					"user": "vagrant",
+					"python_version": "2.7.3",
+					"python_is_default": true,
+					"venv": "my_site",
+					"packages": ["pymongo", {"name": "django", "version": "1.1.4"}]
+				}
+			]
+		}
 	}
 
 Contributing
